@@ -11,3 +11,6 @@ Samples of creating window processors for different window types.
 ### Count Window
 Example of how to use count windows in flink to create windows from objects and 
 then do a stateful process on windows.
+
+### Time Window
+Example of creating window of objects based on time.

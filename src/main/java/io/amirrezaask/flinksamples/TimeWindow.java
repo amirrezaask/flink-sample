@@ -6,10 +6,11 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
 
-public class CountWindow {
+public class TimeWindow {
     public static void main(String[] args) throws Exception {
         // create env
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -21,16 +22,16 @@ public class CountWindow {
         env.setStateBackend(state);
 
         env
-                .fromElements(new CountEvent(1, "Amirreza"), new CountEvent(2, "Amirreza"))
-                .countWindowAll(2)
-                .process(new EventCounter())
+                .fromElements(new CountEvent(1, "Amirreza"))
+                .timeWindowAll(Time.milliseconds(1))
+                .process(new TimedEventCounter())
                 .print();
 
         env.execute();
     }
 }
 
-class EventCounter extends ProcessAllWindowFunction<CountEvent, Integer, GlobalWindow> {
+class TimedEventCounter extends ProcessAllWindowFunction<CountEvent, Integer, org.apache.flink.streaming.api.windowing.windows.TimeWindow> {
     private transient MapState<String, Integer> state;
 
     @Override
@@ -55,13 +56,13 @@ class EventCounter extends ProcessAllWindowFunction<CountEvent, Integer, GlobalW
     }
 }
 
-class TimedEvent {
+class CountEvent {
 
 
     private final int id;
     private final String name;
 
-    TimedEvent(int id, String name) {
+    CountEvent(int id, String name) {
         this.id = id;
         this.name = name;
     }
